@@ -1,24 +1,17 @@
-from collections import Counter
+import numpy as np
 
 
 def search_pascal_multiples_fast(row_limit):
-    ptriangle = []
-    ptriangle.extend([1])
-    ptriangle.extend([1, 1])
-    ptriangle.extend([1, 2, 1])
-    for row in range(3, row_limit):
-        new_row = [1]
-        for i in range(1, row):
-            new_row.append(ptriangle[- i] + ptriangle[- i - 1])
-        new_row.append(1)
-        ptriangle.extend(new_row)
-
-    counter = Counter(ptriangle)
-    counter[1] -= 2 * row_limit - 1
-    counter[2] -= 1
-    for i in range(3, row_limit):
-        counter[i] -= 2
-    return sorted([k for k, v in counter.items() if v > 3])
+    # Credit: https://medium.com/@jelambrar/generating-pascals-triangle-in-python-using-numpy-d7cd9a20570e
+    ptriangle = np.zeros((row_limit, row_limit), dtype=np.int64)
+    ptriangle[:, 0] = 1
+    for i in range(1, row_limit):
+        ptriangle[i, 1:i + 1] = ptriangle[i - 1, 1:i + 1] + ptriangle[i - 1, 0:i]
+    r_indices, c_indices = np.indices((row_limit, row_limit))
+    valid_mask = (c_indices > 1) & (c_indices < r_indices)
+    arr, counts = np.unique(ptriangle[valid_mask], return_counts=True)
+    four_or_more = counts > 3
+    return sorted([int(c) for c in arr[four_or_more]])
 
 #----------- DO NOT CHANGE ANYTHING BELOW THIS LINE
 
