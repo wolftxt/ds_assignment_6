@@ -1,7 +1,24 @@
+from collections import Counter
+
 
 def search_pascal_multiples_fast(row_limit):
-    # Implement your fast function here. Feel free to copy-paste and then change the slow function from below, or to completely re-implement the function from scratch. 
-    return
+    ptriangle = []
+    ptriangle.extend([1])
+    ptriangle.extend([1, 1])
+    ptriangle.extend([1, 2, 1])
+    for row in range(3, row_limit):
+        new_row = [1]
+        for i in range(1, row):
+            new_row.append(ptriangle[- i] + ptriangle[- i - 1])
+        new_row.append(1)
+        ptriangle.extend(new_row)
+
+    counter = Counter(ptriangle)
+    counter[1] -= 2 * row_limit - 1
+    counter[2] -= 1
+    for i in range(3, row_limit):
+        counter[i] -= 2
+    return sorted([k for k, v in counter.items() if v > 3])
 
 #----------- DO NOT CHANGE ANYTHING BELOW THIS LINE
 
